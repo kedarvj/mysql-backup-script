@@ -39,6 +39,20 @@ sendEmail() {
         exit;
 }
 
+motd() {
+# To enable MOTD, uncomment the function calls
+    MOTD="\n\n\n\n####################################\n"
+    MOTD="$MOTD  IMPORTANT: BACKUPS\n"
+    MOTD="####################################\n"
+    MOTD="$MOTD Backup script is at: $SRC_DIR\n"
+    MOTD="$MOTD Local backup stored at: $SRC_DIR\n"
+    MOTD="$MOTD Remote backup stored at: $REMOTE_BACKUP_DIR\n"
+    MOTD="$MOTD Remote backup server is: 192.154.230.46\n"
+    MOTD="$MOTD Last Backup Status on $NOW: $content \n"
+    MOTD="$MOTD####################################\n"
+    echo -e "$MOTD" > /etc/motd
+}
+
 # pipeline will return failure code if the mysqldump command fails
 set -o pipefail
 # Taking backup of all databases
@@ -51,6 +65,7 @@ if [ $RESULT -ne 0 ]; then
         content="Backup appears to have been failed for $NOW. The mysqldump command returned failure status. Please login to $DBSERVER and check the status."
         email_list=$failure_email
         echo "[`date`]Backup failure."
+#        motd # Uncomment if you want to change MOTD
         sendEmail
 fi
 
@@ -62,6 +77,7 @@ if [ $RESULT -ne 0 ]; then
         content="Backup appears to have been completed for $NOW. But SCP to remote server failed."
         email_list=$failure_email
         echo "[`date`]SCP failure."
+#        motd # Uncomment if you want to change MOTD
         sendEmail
 fi
 
@@ -80,5 +96,6 @@ content="The backup file is on database server $SRC_DIR/$FILE. Remote location i
 content=$content.`ls -lhtr $SRC_DIR/ | awk '{print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,"\r"}'`
 email_list=$success_email;
 echo "[`date`]Backup Success."
+#motd # Uncomment if you want to change MOTD
 sendEmail
 exit 0;
