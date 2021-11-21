@@ -56,7 +56,7 @@ motd() {
 # pipeline will return failure code if the mysqldump command fails
 set -o pipefail
 # Taking backup of all databases
-mysqldump --opt --user=${DBUSER} --password=${PASS} --no-data --single-transaction --all-databases | gzip > ${SRC_DIR}/${FILE} 2>/dev/null
+mysqldump --opt --user=${DBUSER} --password=${PASS} --single-transaction --all-databases | gzip > ${SRC_DIR}/${FILE} 2>/dev/null
 
 # Verify backup is success/failure
 RESULT=$?
